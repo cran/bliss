@@ -1,6 +1,6 @@
 Package: bliss
 Title: Bayesian Functional Linear Regression with Sparse Step Functions
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
   person("Paul-Marie", "Grollemund", email = "paul.marie.grollemund@gmail.com", role = c("aut", "cre")),
   person("Isabelle", "Sanchez", email = "isabelle.sanchez@inra.fr", role = c("ctr")),
@@ -18,11 +18,11 @@ Depends: R (>= 3.3.0)
 LinkingTo: Rcpp, RcppArmadillo
 Encoding: UTF-8
 LazyData: TRUE
-Imports: Rcpp, MASS, RColorBrewer, ggplot2, rockchalk
-Suggests: rmarkdown, knitr
+Imports: Rcpp, MASS, rockchalk
+Suggests: rmarkdown, knitr, RColorBrewer
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2020-07-07 08:04:37 UTC; sanchezi
+Packaged: 2021-05-17 07:50:46 UTC; pmgrolle
 Repository: CRAN
-Date/Publication: 2020-07-13 07:00:02 UTC
+Date/Publication: 2021-05-17 09:40:08 UTC
