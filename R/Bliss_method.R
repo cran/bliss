@@ -79,12 +79,15 @@
 #'         of the coefficient function is computed. (optional)
 #' @param sann a logical value. If TRUE, the Bliss estimate is
 #'         computed with a Simulated Annealing Algorithm. (optional)
+#' @param support_estimate a logical value. If TRUE, the estimate of the
+#' coefficient function support is computed. (optional)
 #' @param verbose write stuff if TRUE (optional).
 #' @importFrom utils tail
 #' @export
 #' @examples
 #' # see the vignette BlissIntro.
 fit_Bliss <- function(data,param,compute_density=TRUE,sann=TRUE,
+                      support_estimate=TRUE,
                       verbose=FALSE){
   # Define Q
   Q <- data[["Q"]]
@@ -118,6 +121,7 @@ fit_Bliss <- function(data,param,compute_density=TRUE,sann=TRUE,
                                 K     = param[["K"]],
                                 basis = param[["basis"]],
                                 p     = param[["p"]],
+                                phi_l = param[["phi_l"]],
                                 grids = data[["grids"]])
     chains[[j]] <- Bliss_Gibbs_Sampler(data,param_Gibbs_Sampler,verbose)
 
@@ -184,17 +188,23 @@ fit_Bliss <- function(data,param,compute_density=TRUE,sann=TRUE,
   }
 
   # Compute the support estimate
-  if(verbose) cat("Support estimation.\n")
-  support_estimate <- list()
-  support_estimate_fct <- list()
-  alpha <- list()
-  for(q in 1:Q){
-    res_support <- support_estimation(beta_sample[[q]])
-    support_estimate[[q]]     <- res_support$estimate
-    support_estimate_fct[[q]] <- res_support$estimate_fct
-    alpha[[q]]                <- res_support$alpha
+  if(support_estimate){
+    if(verbose) cat("Support estimation.\n")
+    support_estimate <- list()
+    support_estimate_fct <- list()
+    alpha <- list()
+    for(q in 1:Q){
+      res_support <- support_estimation(beta_sample[[q]])
+      support_estimate[[q]]     <- res_support$estimate
+      support_estimate_fct[[q]] <- res_support$estimate_fct
+      alpha[[q]]                <- res_support$alpha
+    }
+    rm(res_support)
+  }else{
+    support_estimate <- list()
+    support_estimate_fct <- list()
+    alpha <- list()
   }
-  rm(res_support)
 
   # Do not return the list "chains" if n_chains is 1.
   if(n_chains == 1) chains <- NULL

@@ -27,6 +27,8 @@
 #'       "epanechnikov", "gauss" and "triangular" which correspond to
 #'       different basis functions to expand the coefficient function and the
 #'       functional covariates}
+#' \item{phi_l}{a numerical (optional). An hyperparameters related to the exponential prior
+#' on the length of the intervals. Lower values promotes wider intervals.}
 #' }
 #' @param verbose write stuff if TRUE (optional).
 #' @importFrom stats var
@@ -56,6 +58,7 @@ Bliss_Gibbs_Sampler <- function(data,param,verbose=FALSE){
   iter  <- param[["iter"]]
   K     <- param[["K"]]
   p     <- param[["p"]]
+  phi_l <- param[["phi_l"]]
 
   # Initialize the required unspecified objects
   if(is.null(K)) stop("Please specify a value for the vector K.")
@@ -70,6 +73,9 @@ Bliss_Gibbs_Sampler <- function(data,param,verbose=FALSE){
     for (q in 1:Q){
       basis[q] <- "Uniform"
     }
+  }
+  if(is.null(phi_l)){
+    phi_l <- 5
   }
   if(!is.null(basis)){
     for (q in 1:Q){
@@ -90,7 +96,8 @@ Bliss_Gibbs_Sampler <- function(data,param,verbose=FALSE){
   # Determine the prior distribution of l
   Probs_l <- l_values
   for(q in 1:Q){
-    Probs_l[[q]] <- pdexp( 5*K[q] , l_values[[q]] )
+    # Probs_l[[q]] <- pdexp( 5*K[q] , l_values[[q]] )
+    Probs_l[[q]] <- pdexp( phi_l*K[q] , l_values[[q]] )
   }
 
   if(verbose){
@@ -98,6 +105,29 @@ Bliss_Gibbs_Sampler <- function(data,param,verbose=FALSE){
   }else{
     verbose_cpp <- FALSE
   }
+
+  # Determine if there are columns for which there is no variation
+  pb_count <- 0
+  for(q in 1:length(x)){
+    index <- which(apply(x[[q]],2, function(v) length(unique(v)) == 1))
+    if(length(index) > 0){
+      pb_count <- pb_count + 1
+      if(q == 1) number_exposant <- "st"
+      if(q == 2) number_exposant <- "nd"
+      if(q >  3) number_exposant <- "th"
+      if(verbose) cat(paste("\tFor the ",q,number_exposant," functional covariate, ",
+                      "all the individus have the same values for the columns:\n\t  ",
+                      paste(index,collapse = " "),".\n\tThis would",
+                      " eventually leads to non-invertible partial design ",
+                      "matrixes.\n",sep=""))
+    }
+  }
+  if(pb_count > 0){
+    stop(paste("Please provide design columns with non-unique values.",
+    "You could jitter the columns with unique values, or remove them."))
+  }
+  rm(pb_count)
+
   # Perfome the Gibbs Sampler and return the result.
   res <- Bliss_Gibbs_Sampler_cpp(Q,y,x,grids,
                                  iter,K,basis,
