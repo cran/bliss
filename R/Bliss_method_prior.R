@@ -75,10 +75,6 @@
 #' \item{times_sann}{an integer (optional), the number of times the algorithm
 #'       will be executed}
 #' }
-#' @param compute_density a logical value. If TRUE, the posterior density
-#'         of the coefficient function is computed. (optional)
-#' @param sann a logical value. If TRUE, the Bliss estimate is
-#'         computed with a Simulated Annealing Algorithm. (optional)
 #' @param support_estimate a logical value. If TRUE, the estimate of the
 #' coefficient function support is computed. (optional)
 #' @param verbose write stuff if TRUE (optional).
@@ -86,8 +82,7 @@
 #' @export
 #' @examples
 #' # see the vignette BlissIntro.
-fit_Bliss <- function(data,param,compute_density=TRUE,sann=TRUE,
-                      support_estimate=TRUE,
+prior_Bliss <- function(data,param,support_estimate=TRUE,
                       verbose=FALSE){
   # Define Q
   Q <- data[["Q"]]
@@ -110,7 +105,7 @@ fit_Bliss <- function(data,param,compute_density=TRUE,sann=TRUE,
   chains <- list()
   chains_info <- list()
 
-  if(verbose) cat("Sample from the posterior distribution.\n")
+  if(verbose) cat("Sample from the prior distribution.\n")
   # For each chain :
   for(j in 1:n_chains){
     if(verbose & n_chains > 1) cat("Chain ",j,": \n",sep="")
@@ -124,68 +119,18 @@ fit_Bliss <- function(data,param,compute_density=TRUE,sann=TRUE,
                                 phi_l = param[["phi_l"]],
                                 grids = data[["grids"]])
     chains[[j]] <- Bliss_Gibbs_Sampler(data,param_Gibbs_Sampler,verbose)
+    # ,to_sample="prior") # PMG 2024-04-15
 
     chains_info[[j]] <- compute_chains_info(chains[[j]],param_Gibbs_Sampler)
   }
 
   # Choose a chain for inference
   j <- sample(n_chains,1)
-  posterior_sample <- chains[[j]]
+  prior_sample <- chains[[j]]
 
   # Compute a posterior sample of coefficient function
-  if(verbose) cat("Coefficient function: smooth estimate.\n")
-  beta_sample <- compute_beta_sample(posterior_sample,param_Gibbs_Sampler,Q)
-
-  # Execute the Simulated Annealing algorithm to estimate the coefficient function
-  Bliss_estimation <- list()
-  Bliss_estimate   <- list()
-  trace_sann       <- list()
-  Smooth_estimate  <- list()
-  if(sann){
-    if(verbose) cat("Coefficient function: Bliss estimate.\n")
-    for(q in 1:Q){
-      param_Simulated_Annealing <- list( grid = data[["grids"]][[q]],
-                                         iter = param[["iter"]],
-                                         p    = param[["p"]][q],
-                                         Temp_init = param[["Temp_init"]],
-                                         K    = param[["K"]][q],
-                                         k_max = param[["k_max"]][q],
-                                         iter_sann = param[["iter_sann"]],
-                                         times_sann= param[["times_sann"]],
-                                         burnin    = param[["burnin"]],
-                                         l_max     = param[["l_max"]][q],
-                                         basis     = param[["basis"]][q])
-
-      Bliss_estimation[[q]] <- Bliss_Simulated_Annealing(beta_sample[[q]],
-                                                         posterior_sample$param$normalization_values[[q]],
-                                                         param_Simulated_Annealing)
-      Bliss_estimate[[q]]  <- Bliss_estimation[[q]]$Bliss_estimate
-      trace_sann[[q]]      <- Bliss_estimation[[q]]$trace
-      Smooth_estimate[[q]] <- Bliss_estimation[[q]]$Smooth_estimate
-    }
-    rm(Bliss_estimation)
-  }
-
-  # Compute an approximation of the posterior density of the coefficient function
-  beta_posterior_density <- list()
-  if (compute_density){
-    if(verbose) cat("Compute the approximation of the posterior distribution.\n")
-    for(q in 1:Q){
-      param_beta_density <- list(grid= data[["grids"]][[q]],
-                                 iter= param[["iter"]],
-                                 p   = param[["p"]][q],
-                                 n        = length(data[["y"]]),
-                                 thin     = param[["thin"]],
-                                 burnin   = param[["burnin"]],
-                                 lims_kde = param[["lims_kde"]][[q]],
-                                 new_grid = param[["new_grids"]][[q]],
-                                 lims_estimate = range(Smooth_estimate[[q]]),
-                                 verbose = verbose)
-
-      beta_posterior_density[[q]] <-
-        compute_beta_posterior_density(beta_sample[[q]],param_beta_density)
-    }
-  }
+  if(verbose) cat("Coefficient function sample.\n")
+  beta_sample <- compute_beta_sample(prior_sample,param_Gibbs_Sampler,Q)
 
   # Compute the support estimate
   if(support_estimate){
@@ -209,43 +154,15 @@ fit_Bliss <- function(data,param,compute_density=TRUE,sann=TRUE,
   # Do not return the list "chains" if n_chains is 1.
   if(n_chains == 1) chains <- NULL
 
-  if(verbose) cat("Compute the (log) densities of the posterior sample. \n")
-  posterior_sample$posterior_density <- dposterior(posterior_sample,data)
-
   # The object to return
   res <- list(alpha                  = alpha,
-              beta_posterior_density = beta_posterior_density,
               beta_sample            = beta_sample,
-              Bliss_estimate         = Bliss_estimate,
               chains                 = chains,
               chains_info            = chains_info,
-              data                   = data,
-              posterior_sample       = posterior_sample,
-              Smooth_estimate        = Smooth_estimate,
+              prior_sample           = prior_sample,
               support_estimate       = support_estimate,
-              support_estimate_fct   = support_estimate_fct,
-              trace_sann             = trace_sann
+              support_estimate_fct   = support_estimate_fct
   )
   class(res) = c("bliss")
   return(invisible(res))
 }
-
-#' Print a bliss Object
-#'
-#' @param x input bliss Object
-#' @param ... further arguments passed to or from other methods
-#'
-#' @importFrom utils str
-#' @export
-#' @examples
-#' # See fit_Bliss() function
-printbliss<-function(x,...){
-  if(!any(class(x) == "bliss"))
-    stop("Input must have class \"bliss\".")
-
-  cat("This is a bliss object:\n")
-  cat("----- \n")
-  cat("\n")
-  print(str(x))
-}
-
