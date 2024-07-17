@@ -30,15 +30,15 @@ knitr::opts_chunk$set(
   # Structure of a Bliss object
   # str(res_bliss)
 
-## ----eval=TRUE, include = TRUE,fig.height=5,fig.width=7-----------------------
-  library(ggplot2)
-  image_Bliss(res_bliss$beta_posterior_density,param,q=1) 
+## ----eval=FALSE, include = TRUE,fig.height=5,fig.width=7----------------------
+#    library(ggplot2)
+#    image_Bliss(res_bliss$beta_posterior_density,param,q=1)
 
-## ----eval=TRUE, include = TRUE,fig.height=5,fig.width=7-----------------------
-  image_Bliss(res_bliss$beta_posterior_density,param,q=1) + 
-    lines_bliss(res_bliss$data$grids[[1]],res_bliss$Bliss_estimate[[1]]) + 
-    lines_bliss(res_bliss$data$grids[[1]],res_bliss$smooth_estimate[[1]],lty = "dashed")+ 
-    lines_bliss(res_bliss$data$grids[[1]],data$betas[[1]],col="purple")
+## ----eval=FALSE, include = TRUE,fig.height=5,fig.width=7----------------------
+#    image_Bliss(res_bliss$beta_posterior_density,param,q=1) +
+#      lines_bliss(res_bliss$data$grids[[1]],res_bliss$Bliss_estimate[[1]]) +
+#      lines_bliss(res_bliss$data$grids[[1]],res_bliss$smooth_estimate[[1]],lty = "dashed")+
+#      lines_bliss(res_bliss$data$grids[[1]],data$betas[[1]],col="purple")
 
 ## ----eval=TRUE, include = TRUE,fig.height=5,fig.width=7-----------------------
   plot(res_bliss$alpha[[1]],type="o",xlab="time",ylab="posterior probabilities")

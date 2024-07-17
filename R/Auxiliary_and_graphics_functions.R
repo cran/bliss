@@ -10,11 +10,13 @@
 #' @param to_print display the plot if TRUE.
 #' @export
 #' @examples
+#' \donttest{
 #' data(data1)
 #' data(param1)
 #' data(res_bliss1)
 #'
 #' image_Bliss(res_bliss1$beta_posterior_density,param1,q=1)
+#' }
 image_Bliss <- function(beta_posterior_density,param=list(),q=1,to_print=TRUE){
   ########## Initialization - Load objects
   col_low <- param[["col_low"]]
@@ -71,6 +73,7 @@ image_Bliss <- function(beta_posterior_density,param=list(),q=1,to_print=TRUE){
 #' @param lty option corresponding to "linetype" of \code{geom_line}.
 #' @export
 #' @examples
+#' \donttest{
 #' data(data1)
 #' data(param1)
 #' data(res_bliss1)
@@ -78,7 +81,7 @@ image_Bliss <- function(beta_posterior_density,param=list(),q=1,to_print=TRUE){
 #' image_Bliss(res_bliss1$beta_posterior_density,param1,q=1) +
 #' lines_bliss(res_bliss1$data$grids[[1]],res_bliss1$smooth_estimate[[1]])+
 #' lines_bliss(res_bliss1$data$grids[[1]],res_bliss1$Bliss_estimate[[1]],col="purple")
-#'
+#'}
 lines_bliss <- function(x,y,col="black",lty="solid"){
   ########## Initialization - Pretreatment
   df <- data.frame(x=as.vector(x),y=as.vector(y))
@@ -255,7 +258,8 @@ dposterior <- function(posterior_sample,data,theta=NULL){
   }
 
   res <- dposterior_cpp(rposterior,y,N,as.vector(K),potential_intervals,potential_intervals_dims,
-                        as.vector(posterior_sample$param$l_values_length),Q)
+                        as.vector(posterior_sample$param$l_values_length),Q,
+                        tol=sqrt(.Machine$double.eps))
   colnames(res) <- c("posterior density","log posterior density",
                      "likelihood","log likelihood",
                      "prior density","log prior density")

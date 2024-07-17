@@ -21,9 +21,11 @@ ylim, xlab, ylab, title.}
 Plot an approximation of the posterior density.
 }
 \examples{
+\donttest{
 data(data1)
 data(param1)
 data(res_bliss1)
 
 image_Bliss(res_bliss1$beta_posterior_density,param1,q=1)
+}
 }
