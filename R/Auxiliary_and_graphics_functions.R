@@ -8,6 +8,7 @@
 #'          ylim, xlab, ylab, title.
 #' @param q an integer (optional), the index of the functional covariate to plot.
 #' @param to_print display the plot if TRUE.
+#' @param log if TRUE, the log density is plotted.
 #' @export
 #' @examples
 #' \donttest{
@@ -17,7 +18,7 @@
 #'
 #' image_Bliss(res_bliss1$beta_posterior_density,param1,q=1)
 #' }
-image_Bliss <- function(beta_posterior_density,param=list(),q=1,to_print=TRUE){
+image_Bliss <- function(beta_posterior_density,param=list(),q=1,to_print=TRUE,log=FALSE){
   ########## Initialization - Load objects
   col_low <- param[["col_low"]]
   col_mid <- param[["col_mid"]]
@@ -38,11 +39,15 @@ image_Bliss <- function(beta_posterior_density,param=list(),q=1,to_print=TRUE){
   df_density$density = as.vector(density)
   density_max <- max(df_density$density)
 
+  if(log) df_density$density <- log(df_density$density)
+  midpoint_value <- density_max/2
+  # midpoint_value <- quantile(df_density$density,0.8)
+
   ########## Do the plot
   p <- ggplot2::ggplot(df_density) + ggplot2::aes(x=grid_t,y=grid_beta_t) +
     ggplot2::geom_tile(ggplot2::aes(fill=density)) +
     ggplot2::scale_fill_gradient2(low = col_low,mid = col_mid,high = col_high,
-                         midpoint = density_max/2,guide = "none") +
+                         midpoint = midpoint_value,guide = "none") +
     ggplot2::xlab("") + ggplot2::ylab("") +
     ggplot2::theme(panel.background = ggplot2::element_blank()) # theme_classic()
 

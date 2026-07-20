@@ -237,7 +237,8 @@ compute_beta_sample <- function(posterior_sample,param){
 
     beta_sample[[q]] <- compute_beta_sample_cpp(trace_tmp,
                                                 K,grid,p,basis[q],norm_val)
-    count <- count + 3*K[q]
+    # count <- count + 3*K[q] # Error 2026-07-15, found by Héctor Izquierdo Sanz
+    count <- count + 3*K
   }
 
   ####### Output

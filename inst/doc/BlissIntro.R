@@ -31,14 +31,14 @@ knitr::opts_chunk$set(
   # str(res_bliss)
 
 ## ----eval=FALSE, include = TRUE,fig.height=5,fig.width=7----------------------
-#    library(ggplot2)
-#    image_Bliss(res_bliss$beta_posterior_density,param,q=1)
+#   library(ggplot2)
+#   image_Bliss(res_bliss$beta_posterior_density,param,q=1)
 
 ## ----eval=FALSE, include = TRUE,fig.height=5,fig.width=7----------------------
-#    image_Bliss(res_bliss$beta_posterior_density,param,q=1) +
-#      lines_bliss(res_bliss$data$grids[[1]],res_bliss$Bliss_estimate[[1]]) +
-#      lines_bliss(res_bliss$data$grids[[1]],res_bliss$smooth_estimate[[1]],lty = "dashed")+
-#      lines_bliss(res_bliss$data$grids[[1]],data$betas[[1]],col="purple")
+#   image_Bliss(res_bliss$beta_posterior_density,param,q=1) +
+#     lines_bliss(res_bliss$data$grids[[1]],res_bliss$Bliss_estimate[[1]]) +
+#     lines_bliss(res_bliss$data$grids[[1]],res_bliss$smooth_estimate[[1]],lty = "dashed")+
+#     lines_bliss(res_bliss$data$grids[[1]],data$betas[[1]],col="purple")
 
 ## ----eval=TRUE, include = TRUE,fig.height=5,fig.width=7-----------------------
   plot(res_bliss$alpha[[1]],type="o",xlab="time",ylab="posterior probabilities")
@@ -59,32 +59,32 @@ knitr::opts_chunk$set(
 res_bliss$support_estimate[[1]]
 
 ## ----eval=FALSE, include = TRUE-----------------------------------------------
-#     param <- list(Q=2,
-#                   n=50,
-#                   p=c(40,10),
-#                   beta_shapes=c("simple","smooth"),
-#                   grids_lim=list(c(0,1),c(0,2)))
-#  
-#    data <- sim(param)
+#    param <- list(Q=2,
+#                  n=50,
+#                  p=c(40,10),
+#                  beta_shapes=c("simple","smooth"),
+#                  grids_lim=list(c(0,1),c(0,2)))
+# 
+#   data <- sim(param)
 
 ## ----eval=FALSE, include = TRUE-----------------------------------------------
-#    param <- list(       # define the required values of the Bliss method.
-#       iter=1e3,         # The number of iteration of the main numerical algorithm of Bliss.
-#       burnin=2e2,       # The number of burnin iteration for the Gibbs Sampler
-#       K=c(3,3))         # The number of intervals of the beta
-#  
-#    res_Bliss_mult <- fit_Bliss(data=data,param=param)
+#   param <- list(       # define the required values of the Bliss method.
+#      iter=1e3,         # The number of iteration of the main numerical algorithm of Bliss.
+#      burnin=2e2,       # The number of burnin iteration for the Gibbs Sampler
+#      K=c(3,3))         # The number of intervals of the beta
+# 
+#   res_Bliss_mult <- fit_Bliss(data=data,param=param)
 
 ## ----eval=FALSE, include = TRUE,fig.height=5,fig.width=7----------------------
-#    image_Bliss(res_Bliss_mult$beta_posterior_density,param,q=1) +
-#      lines_bliss(res_Bliss_mult$data$grids[[1]],res_Bliss_mult$Bliss_estimate[[1]]) +
-#      lines_bliss(res_Bliss_mult$data$grids[[1]],res_Bliss_mult$smooth_estimate[[1]],lty = "dashed")+
-#      lines_bliss(res_Bliss_mult$data$grids[[1]],data$betas[[1]],col="purple")
-#  
-#    image_Bliss(res_Bliss_mult$beta_posterior_density,param,q=2) +
-#      lines_bliss(res_Bliss_mult$data$grids[[2]],res_Bliss_mult$Bliss_estimate[[2]]) +
-#      lines_bliss(res_Bliss_mult$data$grids[[2]],res_Bliss_mult$smooth_estimate[[2]],lty = "dashed")+
-#      lines_bliss(res_Bliss_mult$data$grids[[2]],data$betas[[2]],col="purple")
+#   image_Bliss(res_Bliss_mult$beta_posterior_density,param,q=1) +
+#     lines_bliss(res_Bliss_mult$data$grids[[1]],res_Bliss_mult$Bliss_estimate[[1]]) +
+#     lines_bliss(res_Bliss_mult$data$grids[[1]],res_Bliss_mult$smooth_estimate[[1]],lty = "dashed")+
+#     lines_bliss(res_Bliss_mult$data$grids[[1]],data$betas[[1]],col="purple")
+# 
+#   image_Bliss(res_Bliss_mult$beta_posterior_density,param,q=2) +
+#     lines_bliss(res_Bliss_mult$data$grids[[2]],res_Bliss_mult$Bliss_estimate[[2]]) +
+#     lines_bliss(res_Bliss_mult$data$grids[[2]],res_Bliss_mult$smooth_estimate[[2]],lty = "dashed")+
+#     lines_bliss(res_Bliss_mult$data$grids[[2]],data$betas[[2]],col="purple")
 
 ## ----session,echo=FALSE,message=FALSE, warning=FALSE--------------------------
   sessionInfo()
